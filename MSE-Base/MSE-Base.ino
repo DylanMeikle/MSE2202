@@ -86,6 +86,7 @@
 #define SMART_LED_COUNT     1   // Number of SMART LEDs in use
 
 #define IR_DETECTOR         9   // GPIO9 pin 17 (J9) IR detector input
+#define MSWITCH             10  // GPIO10 Micro switch
 
 #define LEFT                1   // Indicates left direction for (stepper) motor
 #define RIGHT               0   // Indicates right direction for (stepper) motor
