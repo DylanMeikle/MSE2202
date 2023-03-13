@@ -556,7 +556,92 @@ void loop()
            
          case 6: //add your code to do something 
          {
-            ui_Robot_Mode_Index = 0; //  !!!!!!!  remove if using the case
+            uc_Drive_Speed = map(analogRead(BRDTST_POT_R1), 0, 4096, 150, 255);
+           if(bt_2_S_Time_Up){
+             bt_2_S_Time_Up = false;
+             //Set to height of beacon
+             Bot.ToPosition("S2", 836);
+             switch(beacon_detection_index){
+              case 0://This case will look for beacon
+                {
+                  
+                  Bot.Right("D1", uc_Drive_Speed);     
+                  
+                  if(Scan.Available()){   
+                    Serial.println(Scan.Get_IR_Data());              
+                    if(Scan.Get_IR_Data() == 9 || Scan.Get_IR_Data() == 'B'){
+                      beacon_detection_index = 1;
+                      Bot.Stop("D1");
+                      Serial.println("Found Beacon");
+                    }
+                  }
+                  
+                  
+                  break;
+                }case 1://Drives towards beacon
+                {
+                  Bot.Forward("D1", uc_Drive_Speed);
+                  Bot.ToPosition("S1", 1650);                  
+                  /*
+                  if(Scan.Get_IR_Data() != 9 || Scan.Get_IR_Data() != B){
+                    //Change to 1
+                    beacon_detection_index = 1;
+                    Bot.Stop("D1");
+                    bt_3_S_Time_Up = false;
+                  }*/
+                  //Need to find a way to know when close enough
+                  // Decided to close after 3 seconds has passed
+                  /*
+                  if(Scan.Available()){
+                    if(Scan.Get_IR_Data() == 9 || Scan.Get_IR_Data() == 'B'){
+                      //bt_3_S_Time_Up = false;
+                      beacon_detection_index = 2;
+                      Bot.Stop("D1");
+                      Serial.println("Drove to Beacon");
+                    }
+                  }*/
+                  beacon_detection_index = 2;
+                  
+                  
+                  break;
+                }case 2://Closes the claw
+                {
+                  Bot.Stop("D1");
+                  Bot.ToPosition("S1", 1880);
+                  
+                  beacon_detection_index = 3;
+                  Serial.println("Grabbed beacon");              
+                  break;                
+                }case 3://Moves the arm up
+                {
+                  Bot.ToPosition("S2", 690);
+                  beacon_detection_index = 4;   
+                  Serial.println("Picking up beacon");             
+                  break;
+                }case 4://Reverse 50 cm
+                {
+
+                  Bot.Reverse("D1", uc_Drive_Speed);
+
+                  //How to make it go back 50 cm
+                  
+                  beacon_detection_index = 5;
+                  Serial.println("Reversing");
+                  break;                
+                }case 5://
+                {
+                  Bot.Stop("D1");
+                  //Bot.ToPosition("S2",0);
+                  Bot.ToPosition("S1",1650);
+                  Serial.println("Dropping beacon");
+                  //Resets the index
+                  beacon_detection_index = 0;
+                  break;
+                }
+            }
+            
+           }
+           
             break;
          } 
       }
